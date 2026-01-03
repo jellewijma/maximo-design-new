@@ -1,0 +1,41 @@
+{
+  "metadata": {
+    "title": "Maximo Design - Kranen met kwaliteit",
+    "description": "B2B badkamerkranen catalogus. Bekijk ons assortiment en neem contact met ons op voor een offerte."
+  },
+  "nav": {
+    "home": "Home",
+    "catalog": "Catalogus",
+    "contact": "Contact"
+  },
+  "home": {
+    "brandName": "Maximo Design",
+    "tagline": "Kranen met kwaliteit",
+    "description": "Lorem ipsum dolor sit amet consectetur. Gravida consequat hendrerit dui diam eget. Adipiscing eget tempus a pretium condimentum donec odio mauris. Tellus mauris nunc adipiscing tellus turpis at ullamcorper turpis.",
+    "cta": "Bekijk catalogus"
+  },
+  "catalog": {
+    "title": "Catalogus",
+    "filters": {
+      "title": "Afwerking",
+      "all": "Alles",
+      "gunmetal": "Gun Metal",
+      "gold": "Goud",
+      "bronze": "Brons",
+      "chrome": "Chroom",
+      "matte_black": "Mat Zwart"
+    },
+    "page": "Pagina",
+    "of": "van",
+    "previous": "Vorige",
+    "next": "Volgende"
+  },
+  "contact": {
+    "title": "Contact",
+    "subtitle": "Neem contact met ons op",
+    "message": "Wilt u een bestelling plaatsen of heeft u een vraag? Wij staan voor u klaar.",
+    "emailLabel": "E-mail",
+    "email": "sanisupply@info.nl",
+    "cta": "Stuur ons een e-mail"
+  }
+}
