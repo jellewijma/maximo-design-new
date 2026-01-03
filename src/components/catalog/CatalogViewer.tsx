@@ -3,11 +3,11 @@
 /**
  * Catalog Viewer Component
  *
- * A two-panel catalog viewer that displays catalog pages as spreads.
+ * A two-page book spread catalog viewer for desktop, single page on mobile.
  * Features:
- * - Two-panel view showing left and right pages (book spread)
- * - Page navigation (previous/next)
- * - Page counter showing current position
+ * - Two-page spread on desktop (image left, info right)
+ * - Single page on mobile/tablet
+ * - Centered pagination with < > arrows and "40/92" format
  * - Subtle page turn animation
  * - Keyboard navigation support
  *
@@ -17,18 +17,15 @@
  *   currentPage={1}
  *   totalPages={117}
  *   onPageChange={(page) => setCurrentPage(page)}
+ *   categoryName="Gun Metal"
+ *   categoryDescription="Gun metal offers a bold aesthetic..."
  * />
  * ```
  */
 
 import { useCallback, useEffect, useState } from "react";
-import { useTranslations } from "next-intl";
 import Image from "next/image";
-import {
-  getPageImagePath,
-  getPageSpread,
-  TOTAL_PAGES,
-} from "@/lib/catalog-data";
+import { getPageImagePath, TOTAL_PAGES } from "@/lib/catalog-data";
 
 /**
  * Props for the CatalogViewer component
@@ -40,54 +37,50 @@ interface CatalogViewerProps {
   totalPages?: number;
   /** Callback when page changes */
   onPageChange: (page: number) => void;
+  /** Category name for the right page */
+  categoryName?: string;
+  /** Category description for the right page */
+  categoryDescription?: string;
   /** Additional CSS classes */
   className?: string;
 }
 
 /**
- * Catalog viewer with two-panel spread view
+ * Catalog viewer with two-page spread on desktop and centered pagination
  */
 export function CatalogViewer({
   currentPage,
   totalPages = TOTAL_PAGES,
   onPageChange,
+  categoryName,
+  categoryDescription,
   className = "",
 }: CatalogViewerProps) {
-  const t = useTranslations("catalog");
   const [isAnimating, setIsAnimating] = useState(false);
   const [animationDirection, setAnimationDirection] = useState<
     "left" | "right" | null
   >(null);
 
-  // Get the current spread (left and right pages)
-  const spread = getPageSpread(currentPage);
-
   /**
-   * Navigate to the previous spread
+   * Navigate to the previous page
    */
   const goToPrevious = useCallback(() => {
     if (currentPage <= 1 || isAnimating) return;
 
     setAnimationDirection("left");
     setIsAnimating(true);
-
-    // Navigate back 2 pages for a spread, but not below 1
-    const newPage = Math.max(1, currentPage - 2);
-    onPageChange(newPage);
+    onPageChange(currentPage - 1);
   }, [currentPage, isAnimating, onPageChange]);
 
   /**
-   * Navigate to the next spread
+   * Navigate to the next page
    */
   const goToNext = useCallback(() => {
     if (currentPage >= totalPages || isAnimating) return;
 
     setAnimationDirection("right");
     setIsAnimating(true);
-
-    // Navigate forward 2 pages for a spread, but not above totalPages
-    const newPage = Math.min(totalPages, currentPage + 2);
-    onPageChange(newPage);
+    onPageChange(currentPage + 1);
   }, [currentPage, totalPages, isAnimating, onPageChange]);
 
   // Reset animation state after animation completes
@@ -115,103 +108,83 @@ export function CatalogViewer({
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [goToPrevious, goToNext]);
 
-  // Determine which pages to show based on spread position
-  const showLeftPage = spread.left !== null;
-  const showRightPage = spread.right !== null;
-
-  // Calculate the display page number (showing the right page number for the counter)
-  const displayPage = spread.right ?? spread.left ?? currentPage;
-
   return (
     <div className={`flex flex-col ${className}`}>
-      {/* Two-panel catalog viewer */}
+      {/* Two-page book spread on desktop, single page on mobile */}
       <div
         className={`
-          flex flex-col tablet:flex-row
+          relative
           bg-foreground/5 rounded-lg overflow-hidden
           border border-foreground/10
           transition-transform duration-300 ease-out
-          ${isAnimating && animationDirection === "right" ? "translate-x-[-2%]" : ""}
-          ${isAnimating && animationDirection === "left" ? "translate-x-[2%]" : ""}
+          ${isAnimating && animationDirection === "right" ? "translate-x-[-0.5%]" : ""}
+          ${isAnimating && animationDirection === "left" ? "translate-x-[0.5%]" : ""}
         `}
       >
-        {/* Left page */}
-        <div
-          className={`
-            relative flex-1
-            aspect-[3/4]
-            ${!showLeftPage ? "hidden tablet:flex tablet:items-center tablet:justify-center tablet:bg-foreground/3" : ""}
-          `}
-        >
-          {showLeftPage && spread.left ? (
+        {/* Book spread container */}
+        <div className="flex flex-col desktop:flex-row">
+          {/* Left page - Catalog image */}
+          <div className="relative aspect-[4/3] tablet:aspect-[16/10] desktop:aspect-[4/3] desktop:flex-1">
             <Image
-              src={getPageImagePath(spread.left)}
-              alt={`${t("page")} ${spread.left}`}
+              src={getPageImagePath(currentPage)}
+              alt={`Catalog page ${currentPage}`}
               fill
               className={`
-                object-contain
+                object-cover
                 transition-opacity duration-300
                 ${isAnimating ? "opacity-80" : "opacity-100"}
               `}
-              sizes="(max-width: 768px) 100vw, 50vw"
-              priority={spread.left <= 3}
+              sizes="(max-width: 768px) 100vw, (max-width: 1280px) 100vw, 50vw"
+              priority={currentPage <= 3}
             />
-          ) : (
-            <span className="text-foreground/30 text-sm hidden tablet:block">
-              {/* Empty left page placeholder */}
-            </span>
-          )}
-        </div>
+          </div>
 
-        {/* Center spine/divider (visible on tablet+) */}
-        <div className="hidden tablet:block w-px bg-foreground/20" />
-
-        {/* Right page */}
-        <div
-          className={`
-            relative flex-1
-            aspect-[3/4]
-            ${!showRightPage ? "hidden tablet:flex tablet:items-center tablet:justify-center tablet:bg-foreground/3" : ""}
-          `}
-        >
-          {showRightPage && spread.right ? (
-            <Image
-              src={getPageImagePath(spread.right)}
-              alt={`${t("page")} ${spread.right}`}
-              fill
-              className={`
-                object-contain
-                transition-opacity duration-300
-                ${isAnimating ? "opacity-80" : "opacity-100"}
-              `}
-              sizes="(max-width: 768px) 100vw, 50vw"
-              priority={spread.right <= 3}
-            />
-          ) : (
-            <span className="text-foreground/30 text-sm hidden tablet:block">
-              {/* Empty right page placeholder */}
-            </span>
-          )}
+          {/* Right page - Category info (desktop only) */}
+          <div className="hidden desktop:flex desktop:flex-1 bg-background aspect-[4/3] flex-col justify-center px-12 py-8">
+            {categoryName && (
+              <h2
+                className="
+                  text-3xl desktop:text-4xl
+                  font-semibold mb-6
+                  text-foreground
+                  transition-all duration-300
+                "
+              >
+                {categoryName}
+              </h2>
+            )}
+            {categoryDescription && (
+              <p
+                className="
+                  text-sm text-foreground/60
+                  leading-relaxed
+                  max-w-sm
+                  transition-all duration-300
+                "
+              >
+                {categoryDescription}
+              </p>
+            )}
+          </div>
         </div>
       </div>
 
-      {/* Navigation controls */}
-      <div className="mt-6 flex items-center justify-between">
+      {/* Centered pagination controls */}
+      <div className="mt-8 flex items-center justify-center gap-6">
         {/* Previous button */}
         <button
           onClick={goToPrevious}
           disabled={currentPage <= 1 || isAnimating}
           className={`
-            flex items-center gap-2 px-4 py-2
-            text-sm font-medium
+            p-2
             transition-all duration-200
             ${
               currentPage <= 1
-                ? "text-foreground/30 cursor-not-allowed"
-                : "text-foreground/70 hover:text-foreground"
+                ? "text-foreground/20 cursor-not-allowed"
+                : "text-foreground/60 hover:text-foreground"
             }
           `}
-          aria-label={t("previous")}
+          aria-label="Previous page"
         >
           <svg
             className="w-5 h-5"
@@ -226,12 +199,11 @@ export function CatalogViewer({
               d="M15 19l-7-7 7-7"
             />
           </svg>
-          <span className="hidden tablet:inline">{t("previous")}</span>
         </button>
 
-        {/* Page counter */}
-        <span className="text-foreground/70 tabular-nums">
-          {displayPage} / {totalPages}
+        {/* Page counter: "40/92" format */}
+        <span className="text-foreground/60 text-sm tabular-nums min-w-[60px] text-center">
+          {currentPage}/{totalPages}
         </span>
 
         {/* Next button */}
@@ -239,18 +211,16 @@ export function CatalogViewer({
           onClick={goToNext}
           disabled={currentPage >= totalPages || isAnimating}
           className={`
-            flex items-center gap-2 px-4 py-2
-            text-sm font-medium
+            p-2
             transition-all duration-200
             ${
               currentPage >= totalPages
-                ? "text-foreground/30 cursor-not-allowed"
-                : "text-foreground/70 hover:text-foreground"
+                ? "text-foreground/20 cursor-not-allowed"
+                : "text-foreground/60 hover:text-foreground"
             }
           `}
-          aria-label={t("next")}
+          aria-label="Next page"
         >
-          <span className="hidden tablet:inline">{t("next")}</span>
           <svg
             className="w-5 h-5"
             fill="none"

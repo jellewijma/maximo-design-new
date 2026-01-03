@@ -55,6 +55,7 @@ export default function RootLayout({
             "--font-abril-display": '"Abril Display", serif',
           } as React.CSSProperties
         }
+        suppressHydrationWarning
       >
         {children}
       </body>
