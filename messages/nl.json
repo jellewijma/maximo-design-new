@@ -16,6 +16,9 @@
   },
   "catalog": {
     "title": "Catalogus",
+    "pages": "Pagina's",
+    "goToPage": "Ga naar pagina",
+    "currentPage": "Huidige pagina",
     "filters": {
       "title": "Afwerking",
       "all": "Alles",

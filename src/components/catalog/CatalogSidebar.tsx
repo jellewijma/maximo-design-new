@@ -3,40 +3,34 @@
 /**
  * Catalog Sidebar Component
  *
- * A sidebar filter component for the catalog page.
- * Allows users to filter catalog pages by product finish type.
+ * A sidebar navigation component for the catalog page.
+ * Shows thumbnail previews of catalog pages for quick visual browsing.
  *
  * Features:
- * - Filter buttons for each finish category
- * - Visual indicator for active filter
- * - Page range display for each category
- * - Clicking a filter jumps to that section's first page
+ * - Thumbnail previews of all catalog pages
+ * - Visual indicator for current page
+ * - Scrollable page list
+ * - Clicking a thumbnail jumps to that page
  *
  * @example
  * ```tsx
  * <CatalogSidebar
- *   activeFilter="all"
- *   onFilterChange={(filter) => setActiveFilter(filter)}
+ *   currentPage={5}
  *   onJumpToPage={(page) => setCurrentPage(page)}
  * />
  * ```
  */
 
 import { useTranslations } from "next-intl";
-import {
-  catalogCategories,
-  type FinishType,
-  getFirstPageForFinish,
-} from "@/lib/catalog-data";
+import Image from "next/image";
+import { TOTAL_PAGES, getPageImagePath } from "@/lib/catalog-data";
 
 /**
  * Props for the CatalogSidebar component
  */
 interface CatalogSidebarProps {
-  /** Currently active filter */
-  activeFilter: FinishType;
-  /** Callback when filter changes */
-  onFilterChange: (filter: FinishType) => void;
+  /** Currently active page */
+  currentPage: number;
   /** Callback to jump to a specific page */
   onJumpToPage: (page: number) => void;
   /** Additional CSS classes */
@@ -44,87 +38,98 @@ interface CatalogSidebarProps {
 }
 
 /**
- * Catalog sidebar with finish type filters
+ * Catalog sidebar with page thumbnail previews
  */
 export function CatalogSidebar({
-  activeFilter,
-  onFilterChange,
+  currentPage,
   onJumpToPage,
   className = "",
 }: CatalogSidebarProps) {
   const t = useTranslations("catalog");
 
-  /**
-   * Handle filter button click
-   * Changes the active filter and jumps to the first page of that category
-   */
-  const handleFilterClick = (filter: FinishType) => {
-    onFilterChange(filter);
-    const firstPage = getFirstPageForFinish(filter);
-    onJumpToPage(firstPage);
-  };
+  // Generate array of page pairs (1-2, 3-4, 5-6, etc.)
+  const pagePairs: Array<{ start: number; end: number }> = [];
+  for (let i = 1; i <= TOTAL_PAGES; i += 2) {
+    pagePairs.push({
+      start: i,
+      end: Math.min(i + 1, TOTAL_PAGES),
+    });
+  }
 
   return (
-    <aside className={`w-full ${className}`}>
+    <aside className={`w-full border-r border-foreground/10 pr-4 ${className}`}>
       <div className="sticky top-24">
         {/* Sidebar title */}
         <h2 className="text-lg font-semibold mb-4 text-foreground">
-          {t("filters.title")}
+          {t("pages")}
         </h2>
 
-        {/* Filter list */}
-        <ul className="space-y-1">
-          {/* All filter */}
-          <li>
-            <button
-              onClick={() => handleFilterClick("all")}
-              className={`
-                w-full text-left px-4 py-3 rounded
-                transition-all duration-200
-                flex items-center justify-between
-                ${
-                  activeFilter === "all"
-                    ? "bg-foreground/10 text-foreground border-l-2 border-primary"
-                    : "text-foreground/70 hover:text-foreground hover:bg-foreground/5"
-                }
-              `}
-            >
-              <span>{t("filters.all")}</span>
-              <span className="text-xs text-foreground/50">1 - 117</span>
-            </button>
-          </li>
+        {/* Page thumbnails - scrollable */}
+        <div className="max-h-[calc(100vh-12rem)] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-foreground/20 scrollbar-track-transparent">
+          <ul className="space-y-3">
+            {pagePairs.map((pair) => {
+              const isActive =
+                currentPage >= pair.start && currentPage <= pair.end;
+              return (
+                <li key={`${pair.start}-${pair.end}`}>
+                  <button
+                    onClick={() => onJumpToPage(pair.start)}
+                    className={`
+                      w-full group relative rounded overflow-hidden
+                      transition-all duration-200
+                      ${
+                        isActive
+                          ? "ring-2 ring-primary shadow-lg scale-105"
+                          : "hover:ring-2 hover:ring-foreground/30 hover:scale-102"
+                      }
+                    `}
+                    aria-label={`${t("goToPage")} ${pair.start}-${pair.end}`}
+                    aria-current={isActive ? "page" : undefined}
+                  >
+                    {/* Thumbnail grid - show both pages side by side */}
+                    <div className="relative aspect-[2/1] bg-foreground/5">
+                      <div className="absolute inset-0 flex">
+                        {/* First page of the pair */}
+                        <div className="relative flex-1">
+                          <Image
+                            src={getPageImagePath(pair.start)}
+                            alt={`Page ${pair.start}`}
+                            fill
+                            className="object-cover"
+                            sizes="150px"
+                          />
+                        </div>
+                        {/* Second page of the pair (if exists) */}
+                        {pair.end !== pair.start && (
+                          <div className="relative flex-1 border-l border-foreground/10">
+                            <Image
+                              src={getPageImagePath(pair.end)}
+                              alt={`Page ${pair.end}`}
+                              fill
+                              className="object-cover"
+                              sizes="150px"
+                            />
+                          </div>
+                        )}
+                      </div>
 
-          {/* Category filters */}
-          {catalogCategories.map((category) => (
-            <li key={category.id}>
-              <button
-                onClick={() => handleFilterClick(category.id)}
-                className={`
-                  w-full text-left px-4 py-3 rounded
-                  transition-all duration-200
-                  flex items-center justify-between
-                  ${
-                    activeFilter === category.id
-                      ? "bg-foreground/10 text-foreground border-l-2 border-primary"
-                      : "text-foreground/70 hover:text-foreground hover:bg-foreground/5"
-                  }
-                `}
-              >
-                <span>{t(`filters.${category.labelKey}`)}</span>
-                <span className="text-xs text-foreground/50">
-                  {category.startPage} - {category.endPage}
-                </span>
-              </button>
-            </li>
-          ))}
-        </ul>
+                      {/* Page numbers overlay */}
+                      <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-background/90 to-transparent p-2">
+                        <span className="text-xs font-medium text-foreground">
+                          {pair.start}-{pair.end}
+                        </span>
+                      </div>
+                    </div>
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
 
-        {/* Instructions */}
-        <p className="mt-6 text-xs text-foreground/50 leading-relaxed">
-          {t("filters.title")}:{" "}
-          <span className="text-foreground/70">
-            {t(`filters.${activeFilter}`)}
-          </span>
+        {/* Current page indicator */}
+        <p className="mt-4 text-sm text-foreground/70">
+          {t("currentPage")}: <span className="font-semibold text-foreground">{currentPage}</span> / {TOTAL_PAGES}
         </p>
       </div>
     </aside>

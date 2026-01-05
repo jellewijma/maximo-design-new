@@ -3,13 +3,13 @@
 /**
  * Catalog Viewer Component
  *
- * A two-page book spread catalog viewer for desktop, single page on mobile.
+ * A catalog viewer showing pages in a book spread format.
  * Features:
- * - Two-page spread on desktop (image left, info right)
+ * - Two-page spread on desktop (like an open book)
  * - Single page on mobile/tablet
  * - Centered pagination with < > arrows and "40/92" format
  * - Subtle page turn animation
- * - Keyboard navigation support
+ * - Keyboard navigation support (arrow keys)
  *
  * @example
  * ```tsx
@@ -17,15 +17,13 @@
  *   currentPage={1}
  *   totalPages={117}
  *   onPageChange={(page) => setCurrentPage(page)}
- *   categoryName="Gun Metal"
- *   categoryDescription="Gun metal offers a bold aesthetic..."
  * />
  * ```
  */
 
 import { useCallback, useEffect, useState } from "react";
 import Image from "next/image";
-import { getPageImagePath, TOTAL_PAGES } from "@/lib/catalog-data";
+import { getPageImagePath, getPageSpread, TOTAL_PAGES } from "@/lib/catalog-data";
 
 /**
  * Props for the CatalogViewer component
@@ -37,23 +35,17 @@ interface CatalogViewerProps {
   totalPages?: number;
   /** Callback when page changes */
   onPageChange: (page: number) => void;
-  /** Category name for the right page */
-  categoryName?: string;
-  /** Category description for the right page */
-  categoryDescription?: string;
   /** Additional CSS classes */
   className?: string;
 }
 
 /**
- * Catalog viewer with two-page spread on desktop and centered pagination
+ * Catalog viewer with full-page display and centered pagination
  */
 export function CatalogViewer({
   currentPage,
   totalPages = TOTAL_PAGES,
   onPageChange,
-  categoryName,
-  categoryDescription,
   className = "",
 }: CatalogViewerProps) {
   const [isAnimating, setIsAnimating] = useState(false);
@@ -108,9 +100,12 @@ export function CatalogViewer({
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [goToPrevious, goToNext]);
 
+  // Get the page spread (left and right pages)
+  const spread = getPageSpread(currentPage);
+
   return (
     <div className={`flex flex-col ${className}`}>
-      {/* Two-page book spread on desktop, single page on mobile */}
+      {/* Catalog page display */}
       <div
         className={`
           relative
@@ -121,49 +116,68 @@ export function CatalogViewer({
           ${isAnimating && animationDirection === "left" ? "translate-x-[0.5%]" : ""}
         `}
       >
-        {/* Book spread container */}
-        <div className="flex flex-col desktop:flex-row">
-          {/* Left page - Catalog image */}
-          <div className="relative aspect-[4/3] tablet:aspect-[16/10] desktop:aspect-[4/3] desktop:flex-1">
+        {/* Two-page spread on desktop, single page on mobile */}
+        <div className="relative">
+          {/* Mobile/Tablet: Single page view */}
+          <div className="desktop:hidden relative aspect-[3/4]">
             <Image
               src={getPageImagePath(currentPage)}
               alt={`Catalog page ${currentPage}`}
               fill
               className={`
-                object-cover
+                object-contain
                 transition-opacity duration-300
                 ${isAnimating ? "opacity-80" : "opacity-100"}
               `}
-              sizes="(max-width: 768px) 100vw, (max-width: 1280px) 100vw, 50vw"
+              sizes="100vw"
               priority={currentPage <= 3}
             />
           </div>
 
-          {/* Right page - Category info (desktop only) */}
-          <div className="hidden desktop:flex desktop:flex-1 bg-background aspect-[4/3] flex-col justify-center px-12 py-8">
-            {categoryName && (
-              <h2
-                className="
-                  text-3xl desktop:text-4xl
-                  font-semibold mb-6
-                  text-foreground
-                  transition-all duration-300
-                "
-              >
-                {categoryName}
-              </h2>
+          {/* Desktop: Two-page spread */}
+          <div className="hidden desktop:flex">
+            {/* Left page */}
+            {spread.left && (
+              <div className="relative flex-1 aspect-[3/4] border-r border-foreground/10">
+                <Image
+                  src={getPageImagePath(spread.left)}
+                  alt={`Catalog page ${spread.left}`}
+                  fill
+                  className={`
+                    object-contain
+                    transition-opacity duration-300
+                    ${isAnimating ? "opacity-80" : "opacity-100"}
+                  `}
+                  sizes="50vw"
+                  priority={spread.left <= 3}
+                />
+              </div>
             )}
-            {categoryDescription && (
-              <p
-                className="
-                  text-sm text-foreground/60
-                  leading-relaxed
-                  max-w-sm
-                  transition-all duration-300
-                "
-              >
-                {categoryDescription}
-              </p>
+            {/* Empty left page for page 1 */}
+            {!spread.left && (
+              <div className="flex-1 aspect-[3/4] bg-background/50" />
+            )}
+
+            {/* Right page */}
+            {spread.right && (
+              <div className="relative flex-1 aspect-[3/4]">
+                <Image
+                  src={getPageImagePath(spread.right)}
+                  alt={`Catalog page ${spread.right}`}
+                  fill
+                  className={`
+                    object-contain
+                    transition-opacity duration-300
+                    ${isAnimating ? "opacity-80" : "opacity-100"}
+                  `}
+                  sizes="50vw"
+                  priority={spread.right <= 3}
+                />
+              </div>
+            )}
+            {/* Empty right page for last page if odd */}
+            {!spread.right && (
+              <div className="flex-1 aspect-[3/4] bg-background/50" />
             )}
           </div>
         </div>

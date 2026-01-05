@@ -16,6 +16,9 @@
   },
   "catalog": {
     "title": "Catalog",
+    "pages": "Pages",
+    "goToPage": "Go to page",
+    "currentPage": "Current page",
     "filters": {
       "title": "Finish",
       "all": "All",
