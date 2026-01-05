@@ -7,6 +7,7 @@
 
 import createMiddleware from "next-intl/middleware";
 import { locales, defaultLocale } from "@/lib/i18n/config";
+import { pathnames } from "@/lib/i18n/navigation";
 
 /**
  * Create the internationalization middleware
@@ -14,10 +15,12 @@ import { locales, defaultLocale } from "@/lib/i18n/config";
  * - Detecting user's preferred language
  * - Redirecting to locale-prefixed URLs
  * - Setting the locale cookie
+ * - Mapping pathnames to locale-specific URLs
  */
 export default createMiddleware({
   locales,
   defaultLocale,
+  pathnames,
   // Use prefix for all locales (e.g., /nl/..., /en/...)
   localePrefix: "always",
 });
