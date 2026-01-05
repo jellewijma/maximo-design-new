@@ -23,7 +23,7 @@ import { useState } from "react";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
 import { Link } from "@/lib/i18n/navigation";
-import { LanguageSwitcher } from "./LanguageSwitcher";
+// import { LanguageSwitcher } from "./LanguageSwitcher";
 
 /**
  * Navigation link configuration
@@ -39,9 +39,9 @@ interface NavLink {
  * Navigation links configuration
  */
 const navLinks: NavLink[] = [
-  { labelKey: "home", href: "/" },
-  { labelKey: "catalog", href: "/catalogus" },
+  // { labelKey: "home", href: "/" },
   { labelKey: "contact", href: "/contact" },
+  { labelKey: "catalog", href: "/catalogus" },
 ];
 
 /**
@@ -72,7 +72,7 @@ export function Header({ className = "" }: HeaderProps) {
       className={`
         fixed top-0 left-0 right-0 z-50
         bg-background/95 backdrop-blur-sm
-        border-b border-foreground/10
+        border-b border-[#EFEFEF]
         ${className}
       `}
     >
@@ -95,25 +95,34 @@ export function Header({ className = "" }: HeaderProps) {
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden tablet:flex items-center gap-8">
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className="
-                  text-sm font-medium uppercase tracking-wider
-                  text-foreground/80 hover:text-foreground
-                  transition-colors duration-200
-                "
-              >
-                {t(link.labelKey)}
-              </Link>
-            ))}
+          <nav className="hidden tablet:flex items-center gap-4 ml-auto">
+            {navLinks.map((link) => {
+              const isCatalog = link.labelKey === "catalog";
+              return (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className={`
+                    px-6 py-2
+                    text-sm font-medium uppercase tracking-wider
+                    border border-[#EFEFEF] rounded-full
+                    transition-all duration-200
+                    ${
+                      isCatalog
+                        ? "bg-[#2E00E5] text-foreground hover:bg-[#2E00E5]/90"
+                        : "text-foreground/80 hover:text-foreground hover:bg-foreground/5"
+                    }
+                  `}
+                >
+                  {t(link.labelKey)}
+                </Link>
+              );
+            })}
           </nav>
 
-          {/* Right side: Language switcher + Mobile menu */}
-          <div className="flex items-center gap-4">
-            <LanguageSwitcher />
+          {/* Right side: Mobile menu */}
+          <div className="flex items-center gap-4 tablet:ml-8">
+            {/* <LanguageSwitcher /> */}
 
             {/* Mobile menu button */}
             <button
@@ -162,29 +171,37 @@ export function Header({ className = "" }: HeaderProps) {
           className="
             tablet:hidden
             bg-background/98 backdrop-blur-md
-            border-t border-foreground/10
+            border-t border-[#EFEFEF]
             animate-slideUp
           "
         >
           <div className="container-padding py-4">
-            <ul className="space-y-1">
-              {navLinks.map((link) => (
-                <li key={link.href}>
-                  <Link
-                    href={link.href}
-                    className="
-                      block py-3 px-4
-                      text-lg font-medium
-                      text-foreground/80 hover:text-foreground
-                      hover:bg-foreground/5 rounded
-                      transition-colors duration-200
-                    "
-                    onClick={closeMobileMenu}
-                  >
-                    {t(link.labelKey)}
-                  </Link>
-                </li>
-              ))}
+            <ul className="space-y-3">
+              {navLinks.map((link) => {
+                const isCatalog = link.labelKey === "catalog";
+                return (
+                  <li key={link.href}>
+                    <Link
+                      href={link.href}
+                      className={`
+                        block py-3 px-6
+                        text-center
+                        text-lg font-medium uppercase tracking-wider
+                        border border-[#EFEFEF] rounded-full
+                        transition-all duration-200
+                        ${
+                          isCatalog
+                            ? "bg-[#2E00E5] text-foreground hover:bg-[#2E00E5]/90"
+                            : "text-foreground/80 hover:text-foreground hover:bg-foreground/5"
+                        }
+                      `}
+                      onClick={closeMobileMenu}
+                    >
+                      {t(link.labelKey)}
+                    </Link>
+                  </li>
+                );
+              })}
             </ul>
           </div>
         </nav>

@@ -46,28 +46,32 @@ export function Hero({ className = "" }: HeroProps) {
         {/* Left column - Text content */}
         <div
           className="
-            flex-1 flex flex-col justify-center
-            container-padding py-12 tablet:py-0
+            flex-1 flex flex-col justify-between
+            container-padding py-12 tablet:py-20
             order-2 tablet:order-1
+            tablet:border-r border-[#EFEFEF]
           "
         >
+          {/* Description - At Top */}
           <div className="max-w-xl">
-            {/* Brand Title */}
-            <h1
+            <p
               className="
-                font-display text-5xl tablet:text-6xl desktop:text-7xl wide:text-8xl
-                tracking-wide mb-4
+                text-base tablet:text-lg text-foreground/70
+                max-w-lg leading-relaxed
                 animate-slideUp
               "
             >
-              {t("brandName")}
-            </h1>
+              {t("description")}
+            </p>
+          </div>
 
+          {/* Tagline and Brand Title - At Bottom */}
+          <div className="mt-auto space-y-2">
             {/* Tagline */}
             <p
               className="
                 text-xl tablet:text-2xl desktop:text-3xl font-light
-                mb-6 text-foreground/90
+                text-foreground/90
                 animate-slideUp
               "
               style={{ animationDelay: "100ms" }}
@@ -75,34 +79,25 @@ export function Hero({ className = "" }: HeroProps) {
               {t("tagline")}
             </p>
 
-            {/* Description */}
-            <p
+            {/* Brand Title */}
+            <h1
               className="
-                text-base tablet:text-lg text-foreground/70
-                mb-8 max-w-lg leading-relaxed
+                font-display font-semibold text-5xl tablet:text-6xl desktop:text-7xl wide:text-8xl
+                tracking-wide
+                tablet:whitespace-nowrap
                 animate-slideUp
               "
               style={{ animationDelay: "200ms" }}
             >
-              {t("description")}
-            </p>
-
-            {/* CTA Button */}
-            <div
-              className="animate-slideUp"
-              style={{ animationDelay: "300ms" }}
-            >
-              <Button href="/catalogus" variant="primary" size="lg">
-                {t("cta")}
-              </Button>
-            </div>
+              {t("brandName")}
+            </h1>
           </div>
         </div>
 
         {/* Right column - Hero Image */}
         <div
           className="
-            relative w-full tablet:w-1/2 desktop:w-[55%]
+            relative w-full tablet:w-1/2
             h-[50vh] tablet:h-auto
             order-1 tablet:order-2
             animate-fadeIn
