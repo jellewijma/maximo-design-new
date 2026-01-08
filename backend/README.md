@@ -224,9 +224,16 @@ npm run lint
 
 ### "new row violates row-level security policy" error
 If you get this error when uploading images:
-1. Go to your Supabase SQL Editor
-2. Run the contents of `supabase/fix-rls-policies.sql`
-3. This fixes the authentication policies to properly allow authenticated users to upload
+
+**Quick Fix:**
+1. Go to your Supabase Dashboard → **SQL Editor**
+2. Click **New query**
+3. Copy and paste the ENTIRE contents of `supabase/complete-fix.sql`
+4. Click **Run** (or press Ctrl+Enter)
+5. Wait for "Success. No rows returned"
+6. Refresh your CMS and try uploading again
+
+This fixes both database table policies AND storage bucket policies.
 
 ### "Invalid JWT" errors
 - Clear browser cookies and re-login
