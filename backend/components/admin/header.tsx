@@ -25,7 +25,7 @@ export function AdminHeader({ user }: AdminHeaderProps) {
   };
 
   return (
-    <header className="bg-white border-b">
+    <header className="bg-card border-b border-border">
       <div className="container mx-auto px-4 py-4 flex items-center justify-between">
         <div className="flex items-center gap-8">
           <h1 className="text-xl font-bold">Maximo Design CMS</h1>
@@ -36,7 +36,7 @@ export function AdminHeader({ user }: AdminHeaderProps) {
           </nav>
         </div>
         <div className="flex items-center gap-4">
-          <span className="text-sm text-gray-600">{user.email}</span>
+          <span className="text-sm text-muted-foreground">{user.email}</span>
           <Button variant="outline" size="sm" onClick={handleLogout}>
             Logout
           </Button>

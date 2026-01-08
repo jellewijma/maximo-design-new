@@ -14,7 +14,7 @@ interface CatalogHeaderProps {
 export function CatalogHeader({ catalog }: CatalogHeaderProps) {
   return (
     <div className="space-y-4">
-      <div className="flex items-center gap-2 text-sm text-gray-600">
+      <div className="flex items-center gap-2 text-sm text-muted-foreground">
         <Link href="/admin" className="hover:underline">
           Catalogs
         </Link>
@@ -26,10 +26,10 @@ export function CatalogHeader({ catalog }: CatalogHeaderProps) {
         <div>
           <h1 className="text-3xl font-bold">{catalog.title}</h1>
           {catalog.description && (
-            <p className="text-gray-600 mt-1">{catalog.description}</p>
+            <p className="text-muted-foreground mt-1">{catalog.description}</p>
           )}
           {catalog.category && (
-            <p className="text-sm text-gray-500 mt-2">
+            <p className="text-sm text-muted-foreground mt-2">
               Category: <span className="font-medium">{catalog.category}</span>
             </p>
           )}

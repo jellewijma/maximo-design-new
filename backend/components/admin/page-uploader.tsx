@@ -105,7 +105,7 @@ export function PageUploader({ catalogId, nextPageNumber }: PageUploaderProps) {
         </div>
 
         {files.length > 0 && (
-          <div className="text-sm text-gray-600">
+          <div className="text-sm text-muted-foreground">
             {files.length} file{files.length !== 1 ? "s" : ""} selected
           </div>
         )}

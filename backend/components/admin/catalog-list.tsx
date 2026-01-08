@@ -84,7 +84,7 @@ export function CatalogList({ catalogs: initialCatalogs }: CatalogListProps) {
     return (
       <Card>
         <CardContent className="py-12 text-center">
-          <p className="text-gray-600">No catalogs yet. Create your first one!</p>
+          <p className="text-muted-foreground">No catalogs yet. Create your first one!</p>
         </CardContent>
       </Card>
     );

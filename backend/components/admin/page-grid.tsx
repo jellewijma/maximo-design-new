@@ -58,7 +58,7 @@ export function PageGrid({ catalogId, pages: initialPages }: PageGridProps) {
     return (
       <Card>
         <CardContent className="py-12 text-center">
-          <p className="text-gray-600">No pages uploaded yet. Upload your first page above!</p>
+          <p className="text-muted-foreground">No pages uploaded yet. Upload your first page above!</p>
         </CardContent>
       </Card>
     );
@@ -77,7 +77,7 @@ export function PageGrid({ catalogId, pages: initialPages }: PageGridProps) {
           {pages.map((page) => (
             <div
               key={page.id}
-              className="relative group border rounded-lg overflow-hidden bg-gray-50"
+              className="relative group border border-border rounded-lg overflow-hidden bg-muted/50"
             >
               <div className="aspect-[3/4] relative">
                 <Image
@@ -88,7 +88,7 @@ export function PageGrid({ catalogId, pages: initialPages }: PageGridProps) {
                   sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
                 />
               </div>
-              <div className="p-2 bg-white border-t">
+              <div className="p-2 bg-card border-t border-border">
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-medium">Page {page.page_number}</span>
                   <Button
