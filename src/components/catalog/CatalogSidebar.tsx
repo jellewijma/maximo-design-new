@@ -3,19 +3,19 @@
 /**
  * Catalog Sidebar Component
  *
- * A sidebar filter component for the catalog page.
- * Allows users to filter catalog pages by product finish type.
+ * A vertical sidebar with minimal category markers for the catalog page.
+ * Features a vertical line with horizontal tick marks for each category.
  *
  * Features:
- * - Filter buttons for each finish category
- * - Visual indicator for active filter
- * - Page range display for each category
- * - Clicking a filter jumps to that section's first page
+ * - Vertical line with tick marks for each finish category
+ * - Category label displayed next to active tick
+ * - Clicking a category jumps to that section's first page
+ * - Minimal, modern design matching the new aesthetic
  *
  * @example
  * ```tsx
  * <CatalogSidebar
- *   activeFilter="all"
+ *   activeFilter="gunmetal"
  *   onFilterChange={(filter) => setActiveFilter(filter)}
  *   onJumpToPage={(page) => setCurrentPage(page)}
  * />
@@ -44,7 +44,7 @@ interface CatalogSidebarProps {
 }
 
 /**
- * Catalog sidebar with finish type filters
+ * Catalog sidebar with vertical category markers
  */
 export function CatalogSidebar({
   activeFilter,
@@ -55,77 +55,65 @@ export function CatalogSidebar({
   const t = useTranslations("catalog");
 
   /**
-   * Handle filter button click
+   * Handle category marker click
    * Changes the active filter and jumps to the first page of that category
    */
-  const handleFilterClick = (filter: FinishType) => {
+  const handleCategoryClick = (filter: FinishType) => {
     onFilterChange(filter);
     const firstPage = getFirstPageForFinish(filter);
     onJumpToPage(firstPage);
   };
 
   return (
-    <aside className={`w-full ${className}`}>
-      <div className="sticky top-24">
-        {/* Sidebar title */}
-        <h2 className="text-lg font-semibold mb-4 text-foreground">
-          {t("filters.title")}
-        </h2>
+    <aside className={`relative ${className}`}>
+      <div className="sticky top-24 flex flex-col h-[60vh]">
+        {/* Vertical line with category markers */}
+        <div className="relative flex flex-col justify-between h-full">
+          {/* The vertical line */}
+          <div
+            className="absolute left-0 top-0 bottom-0 w-px bg-foreground/20"
+            aria-hidden="true"
+          />
 
-        {/* Filter list */}
-        <ul className="space-y-1">
-          {/* All filter */}
-          <li>
-            <button
-              onClick={() => handleFilterClick("all")}
-              className={`
-                w-full text-left px-4 py-3 rounded
-                transition-all duration-200
-                flex items-center justify-between
-                ${
-                  activeFilter === "all"
-                    ? "bg-foreground/10 text-foreground border-l-2 border-primary"
-                    : "text-foreground/70 hover:text-foreground hover:bg-foreground/5"
-                }
-              `}
-            >
-              <span>{t("filters.all")}</span>
-              <span className="text-xs text-foreground/50">1 - 117</span>
-            </button>
-          </li>
+          {/* Category markers */}
+          {catalogCategories.map((category) => {
+            const isActive = activeFilter === category.id;
 
-          {/* Category filters */}
-          {catalogCategories.map((category) => (
-            <li key={category.id}>
+            return (
               <button
-                onClick={() => handleFilterClick(category.id)}
+                key={category.id}
+                onClick={() => handleCategoryClick(category.id)}
                 className={`
-                  w-full text-left px-4 py-3 rounded
+                  relative flex items-center
                   transition-all duration-200
-                  flex items-center justify-between
-                  ${
-                    activeFilter === category.id
-                      ? "bg-foreground/10 text-foreground border-l-2 border-primary"
-                      : "text-foreground/70 hover:text-foreground hover:bg-foreground/5"
-                  }
+                  group
+                  ${isActive ? "opacity-100" : "opacity-60 hover:opacity-100"}
                 `}
+                aria-label={`${t(`filters.${category.labelKey}`)} - Pages ${category.startPage}-${category.endPage}`}
               >
-                <span>{t(`filters.${category.labelKey}`)}</span>
-                <span className="text-xs text-foreground/50">
-                  {category.startPage} - {category.endPage}
+                {/* Horizontal tick mark */}
+                <div
+                  className={`
+                    w-4 h-px
+                    transition-all duration-200
+                    ${isActive ? "bg-foreground" : "bg-foreground/40 group-hover:bg-foreground/70"}
+                  `}
+                />
+
+                {/* Category label */}
+                <span
+                  className={`
+                    ml-3 text-xs font-medium whitespace-nowrap
+                    transition-all duration-200
+                    ${isActive ? "text-foreground" : "text-foreground/50 group-hover:text-foreground/80"}
+                  `}
+                >
+                  {t(`filters.${category.labelKey}`)}
                 </span>
               </button>
-            </li>
-          ))}
-        </ul>
-
-        {/* Instructions */}
-        <p className="mt-6 text-xs text-foreground/50 leading-relaxed">
-          {t("filters.title")}:{" "}
-          <span className="text-foreground/70">
-            {t(`filters.${activeFilter}`)}
-          </span>
-        </p>
+            );
+          })}
+        </div>
       </div>
     </aside>
   );

@@ -3,11 +3,11 @@
  *
  * Main hero section for the homepage featuring:
  * - Two-column layout (text left, image right on desktop)
- * - Brand title "Maximo Design" in Abril Display font
- * - Tagline "Kranen met kwaliteit"
- * - Description text
- * - Primary CTA button "Bekijk catalogus" in electric blue (#2E00E5)
- * - Hero product image (hero-main.png)
+ * - Description/lorem ipsum text at TOP of left column
+ * - Tagline "Kranen met kwaliteit" below description
+ * - Brand title "Maximo Design" at BOTTOM of left column (in Abril Display font)
+ * - Hero product image on the right
+ * - No CTA button (moved to header)
  *
  * @example
  * ```tsx
@@ -17,7 +17,6 @@
 
 import { useTranslations } from "next-intl";
 import Image from "next/image";
-import { Button } from "@/components/ui";
 
 /**
  * Props for the Hero component
@@ -29,6 +28,7 @@ interface HeroProps {
 
 /**
  * Homepage hero section with two-column layout
+ * New design: Description at top, brand title at bottom
  */
 export function Hero({ className = "" }: HeroProps) {
   const t = useTranslations("home");
@@ -46,56 +46,51 @@ export function Hero({ className = "" }: HeroProps) {
         {/* Left column - Text content */}
         <div
           className="
-            flex-1 flex flex-col justify-center
-            container-padding py-12 tablet:py-0
+            flex-1 flex flex-col justify-between
+            container-padding py-12 tablet:py-16 desktop:py-20
             order-2 tablet:order-1
           "
         >
-          <div className="max-w-xl">
-            {/* Brand Title */}
-            <h1
+          {/* Top section: Description */}
+          <div
+            className="max-w-lg animate-slideUp"
+            style={{ animationDelay: "100ms" }}
+          >
+            <p
               className="
-                font-display text-5xl tablet:text-6xl desktop:text-7xl wide:text-8xl
-                tracking-wide mb-4
-                animate-slideUp
+                text-sm tablet:text-base text-foreground/70
+                leading-relaxed
               "
             >
-              {t("brandName")}
-            </h1>
+              {t("description")}
+            </p>
+          </div>
 
+          {/* Bottom section: Tagline and Brand Title */}
+          <div className="mt-auto">
             {/* Tagline */}
             <p
               className="
-                text-xl tablet:text-2xl desktop:text-3xl font-light
-                mb-6 text-foreground/90
-                animate-slideUp
-              "
-              style={{ animationDelay: "100ms" }}
-            >
-              {t("tagline")}
-            </p>
-
-            {/* Description */}
-            <p
-              className="
-                text-base tablet:text-lg text-foreground/70
-                mb-8 max-w-lg leading-relaxed
+                text-base tablet:text-lg desktop:text-xl font-light
+                mb-2 tablet:mb-3 text-foreground/80
                 animate-slideUp
               "
               style={{ animationDelay: "200ms" }}
             >
-              {t("description")}
+              {t("tagline")}
             </p>
 
-            {/* CTA Button */}
-            <div
-              className="animate-slideUp"
+            {/* Brand Title */}
+            <h1
+              className="
+                font-display text-4xl tablet:text-5xl desktop:text-6xl wide:text-7xl
+                tracking-wide
+                animate-slideUp
+              "
               style={{ animationDelay: "300ms" }}
             >
-              <Button href="/catalogus" variant="primary" size="lg">
-                {t("cta")}
-              </Button>
-            </div>
+              {t("brandName")}
+            </h1>
           </div>
         </div>
 
@@ -116,12 +111,12 @@ export function Hero({ className = "" }: HeroProps) {
             priority
             sizes="(max-width: 768px) 100vw, 55vw"
           />
-          {/* Gradient overlay for text readability on mobile */}
+          {/* Subtle gradient overlay for depth */}
           <div
             className="
               absolute inset-0
-              bg-gradient-to-b from-transparent via-transparent to-background/80
-              tablet:bg-gradient-to-r tablet:from-background/40 tablet:via-transparent tablet:to-transparent
+              bg-gradient-to-b from-transparent via-transparent to-background/60
+              tablet:bg-gradient-to-r tablet:from-background/20 tablet:via-transparent tablet:to-transparent
             "
             aria-hidden="true"
           />
